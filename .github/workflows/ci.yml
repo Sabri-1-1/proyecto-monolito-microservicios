@@ -13,12 +13,18 @@ jobs:
       - name: Descargar codigo
         uses: actions/checkout@v3
 
-      - name: Construir y levantar monolito
+      - name: Levantar monolito
         run: docker compose up -d --build
         working-directory: monolito
 
-      - name: Ejecutar pruebas del monolito
-        run: docker compose exec -T app npm test
+      - name: Esperar a la base de datos y ejecutar pruebas
+        run: |
+          sleep 5
+          docker compose exec -T app npm test
+        working-directory: monolito
+
+      - name: Bajar servicios
+        run: docker compose down
         working-directory: monolito
 
   test-microservicios:
@@ -27,10 +33,16 @@ jobs:
       - name: Descargar codigo
         uses: actions/checkout@v3
 
-      - name: Construir y levantar microservicios
+      - name: Levantar microservicios
         run: docker compose up -d --build
         working-directory: microservicios
 
-      - name: Ejecutar pruebas de Pedidos
-        run: docker compose exec -T pedidos npm test
+      - name: Esperar a los servicios y ejecutar pruebas
+        run: |
+          sleep 10
+          docker compose exec -T pedidos npm test
+        working-directory: microservicios
+
+      - name: Bajar servicios
+        run: docker compose down
         working-directory: microservicios
