@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pedidos-deployment
+  labels:
+    app: pedidos
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pedidos
+  template:
+    metadata:
+      labels:
+        app: pedidos
+    spec:
+      containers:
+      - name: pedidos
+        image: node:18-alpine
+        command: ["sh", "-c", "echo Microservicio de Pedidos en K8s && sleep 3600"]
+        ports:
+        - containerPort: 3003
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pedidos-service
+spec:
+  type: ClusterIP
+  selector:
+    app: pedidos
+  ports:
+    - port: 3003
+      targetPort: 3003
