@@ -25,9 +25,14 @@ app.get('/db-test', async (req, res) => {
   }
 });
 
-// Cambiar res.json(result.rows) por un objeto de error intencional:
 app.get('/usuarios', async (req, res) => {
-  res.status(500).json({ error: 'Fallo simulado en el servicio de usuarios' });
+  try {
+    const result = await pool.query('SELECT * FROM usuarios ORDER BY id ASC');
+    res.json(result.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al obtener usuarios' });
+  }
 });
 
 app.get('/productos', async (req, res) => {
