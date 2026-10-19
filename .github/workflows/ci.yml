@@ -1,0 +1,36 @@
+name: CI - Monolito y Microservicios
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-monolito:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar codigo
+        uses: actions/checkout@v3
+
+      - name: Construir y levantar monolito
+        run: docker compose up -d --build
+        working-directory: monolito
+
+      - name: Ejecutar pruebas del monolito
+        run: docker compose exec -T app npm test
+        working-directory: monolito
+
+  test-microservicios:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar codigo
+        uses: actions/checkout@v3
+
+      - name: Construir y levantar microservicios
+        run: docker compose up -d --build
+        working-directory: microservicios
+
+      - name: Ejecutar pruebas de Pedidos
+        run: docker compose exec -T pedidos npm test
+        working-directory: microservicios
