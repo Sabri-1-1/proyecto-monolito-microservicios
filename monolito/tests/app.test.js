@@ -11,4 +11,9 @@ describe('Pruebas del Monolito', () => {
     const res = await request(app).get('/health');
     expect(res.statusCode).toBe(200);
   });
+
+  it('GET /usuarios debe responder status 200 y devolver un arreglo', async () => {
+    const res = await request(app).get('/usuarios');
+    expect(res.statusCode).toBe(200);
+  });
 });
