@@ -5,7 +5,7 @@ const app = express();
 app.use(express.json());
 
 app.get('/health', (req, res) => {
-  res.json({ estado: 'error_simulado' });
+  res.json({ estado: 'ok' });
 });
 
 app.get('/db-test', async (req, res) => {
@@ -25,14 +25,9 @@ app.get('/db-test', async (req, res) => {
   }
 });
 
+// Cambiar res.json(result.rows) por un objeto de error intencional:
 app.get('/usuarios', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM usuarios');
-    res.json(result.rows);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Error al consultar usuarios' });
-  }
+  res.status(500).json({ error: 'Fallo simulado en el servicio de usuarios' });
 });
 
 app.get('/productos', async (req, res) => {
