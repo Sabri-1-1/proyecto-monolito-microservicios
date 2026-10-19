@@ -13,23 +13,18 @@ jobs:
       - name: Descargar codigo
         uses: actions/checkout@v3
 
-      - name: Levantar monolito
+      - name: Construir y levantar monolito
         run: docker compose up -d --build
         working-directory: monolito
 
-      - name: Esperar a que los servicios esten listos
-        run: |
-          until [ "$(docker inspect --format='{{json .State.Health.Status}}' monolito-db 2>/dev/null)" = "\"healthy\"" ]; do
-            echo "Esperando a la base de datos del monolito..."
-            sleep 2
-          done
-        working-directory: monolito
+      - name: Esperar 15 segundos a PostgreSQL
+        run: sleep 15
 
       - name: Ejecutar pruebas del monolito
         run: docker compose exec -T app npm test
         working-directory: monolito
 
-      - name: Bajar servicios
+      - name: Apagar monolito
         if: always()
         run: docker compose down
         working-directory: monolito
@@ -40,23 +35,18 @@ jobs:
       - name: Descargar codigo
         uses: actions/checkout@v3
 
-      - name: Levantar microservicios
+      - name: Construir y levantar microservicios
         run: docker compose up -d --build
         working-directory: microservicios
 
-      - name: Esperar a que la base de datos de Pedidos este lista
-        run: |
-          until [ "$(docker inspect --format='{{json .State.Health.Status}}' pedidos-db 2>/dev/null)" = "\"healthy\"" ]; do
-            echo "Esperando a pedidos-db..."
-            sleep 2
-          done
-        working-directory: microservicios
+      - name: Esperar 20 segundos a las BDs de microservicios
+        run: sleep 20
 
       - name: Ejecutar pruebas de Pedidos
         run: docker compose exec -T pedidos npm test
         working-directory: microservicios
 
-      - name: Bajar servicios
+      - name: Apagar microservicios
         if: always()
         run: docker compose down
         working-directory: microservicios
